@@ -44,51 +44,57 @@ const App = () => {
       return;
     }
 
-    const possibleMatch = persons.find(
-      (obj) => obj.name.toLowerCase() === newName.toLowerCase()
+    const match = persons.find(
+      (person) => person.name.toLowerCase() === newName.toLowerCase()
     );
 
-    if (possibleMatch) {
-      window.confirm(
-        `${newName} is already added to phonebook, replace the old number with a new one?`
-      );
+    if (match) {
+      if (
+        !window.confirm(
+          `${newName} is already added to phonebook, replace the old number with a new one?`
+        )
+      ) {
+        return;
+      }
 
-      possibleMatch.number = newPhone;
-
-      const updatedPersons = persons.map((person) =>
-        person.name === possibleMatch.name ? possibleMatch : person
+      const personsWithoutOriginal = persons.filter(
+        (person) => person.name !== match.name
       );
 
       personService
-        .putPerson(possibleMatch)
-        .then((_) => {
-          setPersons(updatedPersons);
-          setMessage(`Updated number for ${possibleMatch.name}`);
+        .putPerson({ ...match, number: newPhone })
+        .then((savedPerson) => {
+          setPersons([...personsWithoutOriginal, savedPerson]);
+          setMessage(`Updated number for ${savedPerson.name}`);
           setNotificationIsError(false);
         })
-        .catch((_) => {
-          // PUT epäonnistui, eli palvelimella ei ole henkilöä
-          setPersons(
-            persons.filter((person) => person.id !== possibleMatch.id)
-          );
-          setMessage(
-            `Information for ${possibleMatch.name} has already been removed from the server`
-          );
-          setNotificationIsError(true);
+        .catch((error) => {
+          if (error.response.status === 404) {
+            setPersons(personsWithoutOriginal);
+            setMessage("Person has already been deleted from the server.");
+            setNotificationIsError(true);
+          } else {
+            setMessage(error.response.data.error);
+            setNotificationIsError(true);
+          }
         });
     } else {
       const newPerson = {
         name: newName,
         number: newPhone,
-        id: persons.length + 1,
       };
 
       personService
         .addPerson(newPerson)
-        .then(setPersons([...persons, newPerson]));
-
-      setMessage(`Added ${newPerson.name}`);
-      setNotificationIsError(false);
+        .then((savedPerson) => {
+          setPersons([...persons, savedPerson]);
+          setMessage(`Added ${newPerson.name}`);
+          setNotificationIsError(false);
+        })
+        .catch((error) => {
+          setMessage(error.response.data.error);
+          setNotificationIsError(true);
+        });
     }
     setNewName("");
     setNewPhone("");
