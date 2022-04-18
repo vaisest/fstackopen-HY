@@ -32,6 +32,7 @@ blogsRouter.post("", async (req, res, next) => {
 
   if (!user) {
     res.status(401).json({ error: "User authentication failed" });
+    return;
   }
 
   newBlog.user = user._id;
