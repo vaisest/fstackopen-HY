@@ -73,8 +73,20 @@ blogsRouter.delete("/:id", async (req, res, next) => {
 
 blogsRouter.put("/:id", async (req, res, next) => {
   const id = req.params.id;
-  const newBlog = req.body;
+  const { title, author, url, likes } = req.body;
+  const newBlog = { title, author, url, likes };
 
+  if (
+    !(
+      newBlog.title &&
+      newBlog.author &&
+      newBlog.url &&
+      Number.isInteger(newBlog.likes)
+    )
+  ) {
+    res.status(400).json({ error: "Missing title, author, likes, or url" });
+    return;
+  }
   const updateResult = await Blog.findByIdAndUpdate(id, newBlog, {
     new: true,
   });

@@ -173,6 +173,7 @@ describe("when there are some blogs initially in the database", () => {
     const blogUpdate = {
       title: "Asder's update on the status of Asd",
       author: "Asder Asderson",
+      url: "https://wikipedia.org",
       likes: 9001,
     };
 
@@ -187,6 +188,7 @@ describe("when there are some blogs initially in the database", () => {
         title: blog.title,
         author: blog.author,
         likes: blog.likes,
+        url: blog.url,
       }))
     ).toContainEqual(blogUpdate);
   });
