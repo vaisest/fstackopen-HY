@@ -12,15 +12,16 @@ blogsRouter.get("", (req, res, next) => {
 });
 
 blogsRouter.post("", async (req, res, next) => {
-  const newBlog = req.body;
+  const { title, author, url, likes } = req.body;
+  const newBlog = { title, author, url, likes };
   const user = req.user;
 
   if (!("likes" in newBlog)) {
     newBlog.likes = 0;
   }
 
-  if (!("title" in newBlog && "author" in newBlog && "url" in newBlog)) {
-    res.sendStatus(400).end();
+  if (!(newBlog.title && newBlog.author && newBlog.url)) {
+    res.status(400).json({ error: "Missing title, author, or url" });
     return;
   }
 
