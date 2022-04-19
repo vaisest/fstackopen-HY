@@ -41,6 +41,11 @@ blogsRouter.post("", async (req, res, next) => {
   const blog = new Blog(newBlog);
 
   const result = await blog.save();
+  await result.populate("user", {
+    username: true,
+    name: true,
+    id: true,
+  });
 
   user.blogs = user.blogs.concat(result._id);
   await user.save();
@@ -63,7 +68,7 @@ blogsRouter.delete("/:id", async (req, res, next) => {
 
   if (user._id.equals(findResult.user._id)) {
     await findResult.delete();
-    user.blogs = user.blogs.filter((blog) => !blog._id.equals(findResult._id));
+    user.blogs = user.blogs.filter((id) => !id.equals(findResult._id));
     await user.save();
     res.status(200).send(findResult);
   } else {
