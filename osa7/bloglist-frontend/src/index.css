@@ -1,0 +1,27 @@
+.notification {
+  color: #005c00;
+  background: #ededed;
+  font-size: 20px;
+  border-style: solid;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.error {
+  color: #cc0000;
+  background: #ededed;
+  font-size: 20px;
+  border-style: solid;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.blog {
+  border-style: solid;
+  border-radius: 1px;
+  border-width: 2px;
+  margin-bottom: 5px;
+  padding: 2px;
+}
